@@ -14,6 +14,12 @@ console.log(req.body);
     
     const { fullname, lastname, email, password } = req.body;
 
+    const isUserAlreadyRegistered = await userModel.findOne({email: email});
+
+    if (isUserAlreadyRegistered){
+        return res.status(400).json({message: 'User already registered with this email'})
+    }
+
     const hashedPassword = await userModel.hashPassword(password);
 
      const user = await userService.createUser({
