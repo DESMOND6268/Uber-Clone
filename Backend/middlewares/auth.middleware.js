@@ -11,6 +11,12 @@ module.exports.authUser = async (req, res, next) => {
             return res.status(401).json({ message: 'Unauthorized Access: No Token Provided' });
         }
 
+        const isBlacklisted = await userModel.findOne({ token: token});
+
+        if (isBlacklisted) {
+            return res.status(401).json({ message: 'Unauthorized Access' });
+        }
+        
         // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -27,4 +33,4 @@ module.exports.authUser = async (req, res, next) => {
     } catch (error) {
         return res.status(401).json({ message: 'Unauthorized Access: Invalid or Expired Token', error: error.message });
     }
-};
+}; 
